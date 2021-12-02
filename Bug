@@ -1,0 +1,263 @@
+using System;
+using System.Collections.Generic;
+
+namespace ClassBug
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var bugs = new List<Bug>();
+            var testCases = new List<TestCase>();
+     
+
+            while (true)
+            {
+                //Console.WriteLine("Press G to get bugs or A to add a new one");
+                Console.WriteLine("If you want work with bug press B and if want to work with TestCase press T");
+
+                var actionKey = Console.ReadLine();
+
+
+                switch (actionKey.ToUpper())
+                {
+                    case "B":
+                        Console.WriteLine("Press G to get bugs or A to add a new one");
+                        var actionBagKey = Console.ReadLine();
+                        if (actionBagKey.ToUpper() == "G")
+                        {
+                            bugs.ForEach(Console.WriteLine);
+                        } 
+                        else
+                        {
+                            var bug = InitBug();
+                            bugs.Add(bug);
+                        }
+                        
+                        break;
+                    case "T":
+                        Console.WriteLine("Press G to get TestCases or A to add a new one");
+                        var actionTestCasesKey = Console.ReadLine();
+                        if (actionTestCasesKey.ToUpper() == "G")
+                        {
+                            testCases.ForEach(Console.WriteLine);
+                        }
+                        else
+                        {
+                            var testCase = InitTestCase();
+                            testCases.Add(testCase);
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Incorrect input. Please follow the instructions above");
+                        break;
+                }
+
+
+            }
+        }
+
+        private static Bug InitBug()
+        {
+            //priority
+            while (true)
+            {
+                Console.WriteLine("Enter testCase priority: l for low, m for medium, h for high");
+                string priorityStr = Console.ReadLine().ToUpper();
+                if (priorityStr != "M" || priorityStr != "L" || priorityStr != "H")
+                {
+                    Console.WriteLine("Uncorrect data, try on");
+                    continue;
+                }
+                Priority priority = ProcessPriority(priorityStr);
+                break;
+            }
+            //Console.WriteLine("Enter bug priority: l for low, m for medium, h for high");
+            //string priorityStr = Console.ReadLine();
+            //Priority priority = ProcessPriority(priorityStr);
+
+            //summary for Bug
+            Console.WriteLine($"Enter {nameof(Bug.Summary)}");
+            string summary = Console.ReadLine();
+
+            //precondition for Bug
+            Console.WriteLine($"Enter {nameof(Bug.Precondition)}");
+            string precondition = Console.ReadLine();
+
+            //testCaseId for Bug
+            Console.WriteLine($"Enter {nameof(Bug.TestCaseId)}");
+            string testCaseIdStr = Console.ReadLine();
+            int.TryParse(testCaseIdStr, out int testCaseId);
+
+            //stepNumber for Bug
+            Console.WriteLine($"Enter {nameof(Bug.StepNumber)}");
+            string stepNumberStr = Console.ReadLine();
+            int.TryParse(stepNumberStr, out int stepNumber);
+
+            //actualResult for Bug
+            Console.WriteLine($"Enter {nameof(Bug.ActualResult)}");
+            string actualResult = Console.ReadLine();
+
+            //expectedResult for Bug
+            Console.WriteLine($"Enter {nameof(Bug.ExpectedResult)}");
+            string expectedResult = Console.ReadLine();
+
+            var bug = new Bug()
+            {
+                Priority = priority,
+                Summary = summary,
+                Precondition = precondition,
+                TestCaseId = testCaseId,
+                StepNumber = stepNumber,
+                ActualResult = actualResult,
+                ExpectedResult = expectedResult
+            };
+
+            return bug;
+        }
+
+        private static TestCase InitTestCase()
+        {
+            //priority
+
+            while(true)
+            {
+                Console.WriteLine("Enter testCase priority: l for low, m for medium, h for high");
+                string priorityStr = Console.ReadLine().ToUpper();
+                if(priorityStr != "M" || priorityStr != "L" || priorityStr != "H")
+                {
+                    Console.WriteLine("Uncorrect data, try on");
+                    continue;
+                }
+                Priority priority = ProcessPriority(priorityStr);
+                break;
+            }
+            
+            
+            //summary for TestCase
+            Console.WriteLine($"Enter {nameof(TestCase.Summary)}");
+            string summary = Console.ReadLine();
+
+            //precondition for TestCase
+            Console.WriteLine($"Enter {nameof(TestCase.Precondition)}");
+            string precondition = Console.ReadLine();
+
+
+
+            var testCase = new TestCase()
+            {
+                Priority = priority,
+                Summary = summary,
+                Precondition = precondition,
+            };
+
+            return testCase;
+        }
+
+
+        private static Priority ProcessPriority(string priority)
+        {
+
+            return priority switch
+            {
+                "l" => Priority.Low,
+                "m" => Priority.Medium,
+                "h" => Priority.High,
+                _ => Priority.Medium
+            };
+        }
+
+    }
+
+
+    public enum Priority
+    {
+        Low,
+        Medium,
+        High
+    }
+
+    public enum Status
+    {
+        New,
+        InProgress,
+        Failed,
+        Done
+    }
+
+    public class Bug
+    {
+        //public static int Id { get; set; }
+        public Guid Id { get; set; }
+        public DateTime CreationDate { get; set; }
+        public Priority Priority { get; set; }
+        public string Summary { get; set; }
+        public string Precondition { get; set; }
+        public Status Status { get; set; }
+        public int TestCaseId { get; set; }
+        public int StepNumber { get; set; }
+        public string ActualResult { get; set; }
+        public string ExpectedResult { get; set; }
+
+        public Bug()
+        {
+            //Id = id;
+            //Id = new Random().Next(1, 100);
+            Id = Guid.NewGuid();
+            CreationDate = DateTime.UtcNow;
+            Status = Status.New;
+        }
+
+        public override string ToString()
+        {
+            return $"Id = {Id}, \n CreationDate = {CreationDate}, \n" +
+                $"Priority = {Priority}, \n" +
+                $"Summary = {Summary}, \n" +
+                $"Precondition = {Precondition}, \n" +
+                $"Status = {Status}, \n" +
+                $"TestCaseId = {TestCaseId}, \n" +
+                $"StepNumber = {StepNumber}, \n" +
+                $"ActualResult = {ActualResult}, \n" +
+                $"ExpectedResult = {ExpectedResult}";
+        }
+    }
+
+    public class Step
+    {
+        public Guid Number { get; set; }
+        public string Action { get; set; }
+        public string Result { get; set; }
+
+        public Step ()
+        {
+            Number = Guid.NewGuid();
+        }
+    }
+
+    public class TestCase
+    {
+        //public int Id { get; set; }
+        public Guid Id { get; set; }
+        public DateTime CreationDate { get; set; }
+        public Priority Priority { get; set; }
+        public string Summary { get; set; }
+        public string Precondition { get; set; }
+        public Status Status { get; set; }
+
+        public TestCase()
+        {
+            Id = Guid.NewGuid();
+            CreationDate = DateTime.UtcNow;
+            Status = Status.New;
+        }
+
+        public override string ToString()
+        {
+            return $"Id = {Id}, \n CreationDate = {CreationDate}, \n" +
+                $"Priority = {Priority}, \n" +
+                $"Summary = {Summary}, \n" +
+                $"Precondition = {Precondition}, \n" +
+                $"Status = {Status}.";
+        }
+    }
+}
